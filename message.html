@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>个人作品集 | 留言板</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Microsoft Yahei", sans-serif;
+        }
+        body {
+            background-color: #0b101b;
+            color: #fff;
+            overflow-x: hidden;
+        }
+        #canvas-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 0;
+        }
+        .container {
+            position: relative;
+            z-index: 1;
+            min-height: 100vh;
+            padding: 40px;
+        }
+        header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+        header h1 {
+            font-size: 42px;
+            margin-bottom: 12px;
+            color: #72b8ff;
+        }
+        header p {
+            font-size: 18px;
+            color: #b0c4de;
+        }
+        nav {
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+            flex-wrap: wrap;
+            margin-bottom: 60px;
+        }
+        nav a {
+            color: #cce0ff;
+            text-decoration: none;
+            font-size: 17px;
+            padding: 8px 16px;
+            border: 1px solid #428bca;
+            border-radius: 6px;
+            transition: 0.3s;
+        }
+        nav a:hover {
+            background: #428bca;
+            color: #fff;
+        }
+        .form-card {
+            max-width: 700px;
+            margin: 0 auto 40px;
+            background: rgba(255,255,255,0.08);
+            padding: 30px;
+            border-radius: 14px;
+            border: 1px solid rgba(114,184,255,0.3);
+        }
+        .form-card h2 {
+            margin-bottom: 18px;
+            color: #94c8ff;
+            font-size: 22px;
+        }
+        .form-card input,
+        .form-card textarea {
+            width: 100%;
+            background: rgba(11,16,27,0.8);
+            border: 1px solid #428bca;
+            border-radius: 8px;
+            color: #fff;
+            font-size: 15px;
+            padding: 10px 12px;
+            margin-bottom: 14px;
+            outline: none;
+        }
+        .form-card textarea {
+            resize: vertical;
+            min-height: 100px;
+            line-height: 1.6;
+        }
+        .form-card input:focus,
+        .form-card textarea:focus {
+            border-color: #72b8ff;
+        }
+        .submit-btn {
+            background: #428bca;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 28px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .submit-btn:hover {
+            background: #5aa0dd;
+        }
+        .tip {
+            font-size: 13px;
+            color: #8899aa;
+            margin-top: 12px;
+            line-height: 1.6;
+        }
+        #msgList {
+            max-width: 700px;
+            margin: 0 auto;
+        }
+        .msg-item {
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(114,184,255,0.3);
+            border-radius: 14px;
+            padding: 22px 26px;
+            margin-bottom: 16px;
+        }
+        .msg-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .msg-name {
+            color: #94c8ff;
+            font-weight: bold;
+            font-size: 16px;
+            word-break: break-all;
+        }
+        .msg-time {
+            color: #8899aa;
+            font-size: 12px;
+        }
+        .msg-content {
+            line-height: 1.8;
+            color: #e4edf7;
+            font-size: 15px;
+            word-break: break-word;
+        }
+        .del-btn {
+            background: transparent;
+            border: 1px solid #766;
+            color: #ff9a9a;
+            border-radius: 6px;
+            font-size: 12px;
+            padding: 3px 10px;
+            cursor: pointer;
+            margin-top: 12px;
+        }
+        .del-btn:hover {
+            background: rgba(255,100,100,0.15);
+        }
+        .empty {
+            text-align: center;
+            color: #8899aa;
+            font-size: 15px;
+            padding: 30px 0;
+        }
+        footer {
+            text-align: center;
+            margin-top: 60px;
+            color: #8899aa;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+<canvas id="canvas-bg"></canvas>
+<div class="container">
+    <header>
+        <h1>留言板</h1>
+        <p>写下想说的话，留下一点痕迹</p>
+    </header>
+    <nav>
+        <a href="index.html">首页</a>
+        <a href="education.html">教育背景</a>
+        <a href="skills.html">技能</a>
+        <a href="projects.html">项目</a>
+        <a href="works.html">作品</a>
+        <a href="message.html">留言板</a>
+        <a href="thanks.html">致谢</a>
+    </nav>
+
+    <div class="form-card">
+        <h2>发表留言</h2>
+        <input id="nameInput" type="text" maxlength="20" placeholder="你的昵称（不超过20字）">
+        <textarea id="msgInput" maxlength="500" placeholder="想说的话（不超过500字）"></textarea>
+        <button id="submitBtn" class="submit-btn">提交留言</button>
+        <p class="tip">提示：留言保存在你自己的浏览器里，换电脑、换浏览器或清除缓存后会消失。</p>
+    </div>
+
+    <div id="msgList"></div>
+
+    <footer>© 2026 个人作品集</footer>
+</div>
+
+<script>
+// ===== 粒子背景 =====
+const canvas = document.getElementById('canvas-bg');
+const ctx = canvas.getContext('2d');
+let w, h;
+let points = [];
+const count = 70;
+const radius = 1.2;
+const connectDist = 100;
+
+function resize() {
+    w = canvas.width = window.innerWidth;
+    h = canvas.height = window.innerHeight;
+}
+function createPoints() {
+    points = [];
+    for (let i = 0; i < count; i++) {
+        points.push({
+            x: Math.random() * w,
+            y: Math.random() * h,
+            vx: (Math.random() - 0.5) * 0.6,
+            vy: (Math.random() - 0.5) * 0.6
+        });
+    }
+}
+function draw() {
+    ctx.clearRect(0, 0, w, h);
+    for (let p of points) {
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, radius, 0, Math.PI * 2);
+        ctx.fillStyle = "#72b8ff";
+        ctx.fill();
+    }
+    for (let i = 0; i < points.length; i++) {
+        for (let j = i + 1; j < points.length; j++) {
+            const dx = points[i].x - points[j].x;
+            const dy = points[i].y - points[j].y;
+            const d = Math.sqrt(dx * dx + dy * dy);
+            if (d < connectDist) {
+                ctx.beginPath();
+                ctx.moveTo(points[i].x, points[i].y);
+                ctx.lineTo(points[j].x, points[j].y);
+                ctx.strokeStyle = `rgba(114,184,255,${(connectDist - d) / connectDist * 0.4})`;
+                ctx.lineWidth = 0.5;
+                ctx.stroke();
+            }
+        }
+    }
+    for (let p of points) {
+        p.x += p.vx;
+        p.y += p.vy;
+        if (p.x < 0 || p.x > w) p.vx *= -1;
+        if (p.y < 0 || p.y > h) p.vy *= -1;
+    }
+    requestAnimationFrame(draw);
+}
+resize();
+createPoints();
+draw();
+window.addEventListener('resize', () => { resize(); createPoints(); });
+
+// ===== 留言板逻辑 =====
+const STORAGE_KEY = 'myPortfolioMessages';
+const nameInput = document.getElementById('nameInput');
+const msgInput = document.getElementById('msgInput');
+const submitBtn = document.getElementById('submitBtn');
+const msgList = document.getElementById('msgList');
+
+function getMessages() {
+    try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        const arr = raw ? JSON.parse(raw) : [];
+        return Array.isArray(arr) ? arr : [];
+    } catch (e) {
+        return [];
+    }
+}
+function saveMessages(arr) {
+    try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(arr));
+    } catch (e) {
+        alert('保存失败，可能是浏览器存储空间已满或被限制');
+    }
+}
+function formatTime(ts) {
+    const d = new Date(ts);
+    const pad = n => String(n).padStart(2, '0');
+    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+
+function renderMessages() {
+    const arr = getMessages();
+    msgList.innerHTML = '';
+
+    if (arr.length === 0) {
+        const empty = document.createElement('div');
+        empty.className = 'empty';
+        empty.textContent = '还没有留言，来做第一个留言的人吧。';
+        msgList.appendChild(empty);
+        return;
+    }
+
+    arr.forEach(item => {
+        const box = document.createElement('div');
+        box.className = 'msg-item';
+
+        const head = document.createElement('div');
+        head.className = 'msg-head';
+
+        const name = document.createElement('div');
+        name.className = 'msg-name';
+        name.textContent = item.name;   // 用 textContent，防止注入
+
+        const time = document.createElement('div');
+        time.className = 'msg-time';
+        time.textContent = formatTime(item.time);
+
+        head.appendChild(name);
+        head.appendChild(time);
+
+        const content = document.createElement('div');
+        content.className = 'msg-content';
+        content.textContent = item.content;
+        // 让换行正常显示
+        content.style.whiteSpace = 'pre-wrap';
+
+        const del = document.createElement('button');
+        del.className = 'del-btn';
+        del.textContent = '删除';
+        del.addEventListener('click', () => {
+            if (!confirm('确定删除这条留言吗？')) return;
+            const list = getMessages().filter(m => m.id !== item.id);
+            saveMessages(list);
+            renderMessages();
+        });
+
+        box.appendChild(head);
+        box.appendChild(content);
+        box.appendChild(del);
+        msgList.appendChild(box);
+    });
+}
+
+submitBtn.addEventListener('click', () => {
+    const n = nameInput.value.trim();
+    const m = msgInput.value.trim();
+
+    if (!n) { alert('请填写昵称'); nameInput.focus(); return; }
+    if (!m) { alert('请填写留言内容'); msgInput.focus(); return; }
+
+    const arr = getMessages();
+    arr.push({
+        id: Date.now() + '-' + Math.random().toString(36).slice(2, 8),
+        name: n,
+        content: m,
+        time: Date.now()
+    });
+    saveMessages(arr);
+
+    nameInput.value = '';
+    msgInput.value = '';
+    renderMessages();
+});
+
+renderMessages();
+</script>
+</body>
+</html>

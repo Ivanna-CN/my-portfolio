@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>个人作品集 | 首页</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Microsoft Yahei", sans-serif;
+        }
+        body {
+            background-color: #0b101b;
+            color: #fff;
+            overflow-x: hidden;
+        }
+        #canvas-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 0;
+        }
+        .container {
+            position: relative;
+            z-index: 1;
+            min-height: 100vh;
+            padding: 40px;
+        }
+        header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+        header h1 {
+            font-size: 42px;
+            margin-bottom: 12px;
+            color: #72b8ff;
+        }
+        header p {
+            font-size: 18px;
+            color: #b0c4de;
+        }
+        nav {
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+            flex-wrap: wrap;
+            margin-bottom: 60px;
+        }
+        nav a {
+            color: #cce0ff;
+            text-decoration: none;
+            font-size: 17px;
+            padding: 8px 16px;
+            border: 1px solid #428bca;
+            border-radius: 6px;
+            transition: 0.3s;
+        }
+        nav a:hover {
+            background: #428bca;
+            color: #fff;
+        }
+        .intro-card {
+            max-width: 700px;
+            margin: 0 auto;
+            background: rgba(255,255,255,0.08);
+            padding: 36px;
+            border-radius: 14px;
+            border: 1px solid rgba(114,184,255,0.3);
+        }
+        .intro-card h2 {
+            margin-bottom: 18px;
+            color: #94c8ff;
+        }
+        .intro-card p {
+            line-height: 1.8;
+            color: #e4edf7;
+            font-size: 16px;
+        }
+        footer {
+            text-align: center;
+            margin-top: 80px;
+            color: #8899aa;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+<canvas id="canvas-bg"></canvas>
+<div class="container">
+    <header>
+        <h1>你好，欢迎来到我的作品集</h1>
+        <p>热爱生活｜持续学习｜探索实践</p>
+    </header>
+    <nav>
+        <a href="index.html">首页</a>
+        <a href="education.html">教育背景</a>
+        <a href="skills.html">技能</a>
+        <a href="projects.html">项目</a>
+        <a href="works.html">作品</a>
+        <a href="message.html">留言板</a>
+        <a href="thanks.html">致谢</a>
+    </nav>
+    <div class="intro-card">
+        <h2>关于我</h2>
+        <p>这里是个人简介，你可以自行修改文字，介绍自己、专业、爱好与目标。</p>
+        <p style="margin-top:12px">欢迎浏览各个页面，查看我的学习经历、技能、项目和作品。</p>
+    </div>
+    <footer>© 2026 个人作品集</footer>
+</div>
+
+<script>
+const canvas = document.getElementById('canvas-bg');
+const ctx = canvas.getContext('2d');
+let w, h;
+let points = [];
+const count = 70;
+const radius = 1.2;
+const connectDist = 100;
+
+function resize() {
+    w = canvas.width = window.innerWidth;
+    h = canvas.height = window.innerHeight;
+}
+function createPoints() {
+    points = [];
+    for(let i=0;i<count;i++){
+        points.push({
+            x: Math.random()*w,
+            y: Math.random()*h,
+            vx: (Math.random()-0.5)*0.6,
+            vy: (Math.random()-0.5)*0.6
+        })
+    }
+}
+function draw() {
+    ctx.clearRect(0,0,w,h);
+    for(let p of points){
+        ctx.beginPath();
+        ctx.arc(p.x,p.y,radius,0,Math.PI*2);
+        ctx.fillStyle="#72b8ff";
+        ctx.fill();
+    }
+    for(let i=0;i<points.length;i++){
+        for(let j=i+1;j<points.length;j++){
+            const dx = points[i].x - points[j].x;
+            const dy = points[i].y - points[j].y;
+            const d = Math.sqrt(dx*dx+dy*dy);
+            if(d < connectDist){
+                ctx.beginPath();
+                ctx.moveTo(points[i].x,points[i].y);
+                ctx.lineTo(points[j].x,points[j].y);
+                ctx.strokeStyle = `rgba(114,184,255,${(connectDist-d)/connectDist*0.4})`;
+                ctx.lineWidth=0.5;
+                ctx.stroke();
+            }
+        }
+    }
+    for(let p of points){
+        p.x += p.vx;
+        p.y += p.vy;
+        if(p.x<0||p.x>w) p.vx *= -1;
+        if(p.y<0||p.y>h) p.vy *= -1;
+    }
+    requestAnimationFrame(draw);
+}
+resize();
+createPoints();
+draw();
+window.addEventListener('resize',()=>{resize();createPoints()})
+</script>
+</body>
+</html>
